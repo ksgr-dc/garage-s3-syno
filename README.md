@@ -77,20 +77,18 @@ Under `Create`, select `Launch with command` and enter the following command in 
 The following output should now appear.
 
 ```shell
-No data
+No data 
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@127.0.0.1:3901  
                                                                                  
-To instruct a node to connect to this node, run the following command on that nod
-e:                                                                               
+To instruct a node to connect to this node, run the following command on that node:                                                                               
     garage [-c <config file path>] node connect xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@127.0.0.1:3901                                   
                                                                                  
 This node identifier can also be added as a bootstrap node in other node's garage.toml files:                                                                     
     bootstrap_peers = [                                                          
-        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@127.0.0
-.1:3901",   
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx@127.0.0.1:3901",   
         ...     
     ]                                                                                          
-Security notice: Garage's intra-cluster communications are secured primarily by the shared secret value rpc_secret.  However, an attacker that knows rpc_secret (for example if it leaks) cannot connect if they do not know any of the identifiers of the nodes in the cluster. It is thus a good security measure to try to keep them secret if possible.        
+Security notice: Garage's intra-cluster communications are secured primarily by the shared secret value rpc_secret. However, an attacker that knows rpc_secret (for example if it leaks) cannot connect if they do not know any of the identifiers of the nodes in the cluster. It is thus a good security measure to try to keep them secret if possible.        
 ```
 
 The Synology console is now deactivated because there is no open session to the container, which makes it impossible to copy individual values. 
