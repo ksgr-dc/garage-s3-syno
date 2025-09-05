@@ -1,0 +1,77 @@
+services:
+  nginx-proxy:
+    image: nginx:1.29.1-alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    depends_on:
+      - garage-gateway
+      - webui
+    volumes:
+      - /volume1/s3-1/nginx/conf.d:/etc/nginx/conf.d:ro
+      - /volume1/s3-1/nginx/dhparam:/etc/nginx/dhparam:ro
+      - /volume1/s3-1/certs/pki:/etc/nginx/certs:ro
+      - /volume1/s3-1/certs/ca/ca-certificates.crt:/etc/ssl/certs/ksgr-ca-certificates.crt:ro
+    ports:
+      - "8443:8443"
+    networks:
+      - garage
+  webui:
+    image: khairul169/garage-webui:1.1.0
+    container_name: garage-webui
+    restart: unless-stopped
+    volumes:
+      - /volume1/s3-1/app/garage.toml:/etc/garage.toml:ro
+    ports:
+      - "3909:3909"
+    environment:
+      API_BASE_URL: "http://garage-gateway:3903"
+      S3_ENDPOINT_URL: "http://garage-gateway:3900"
+      #AUTH_USER_PASS: "YOUR_USERNAME:$2y$10$4YJZOAKf2eBtAclSoPZ7gOjSpGyKXUZXCRcZO/UQBAczQJctXU5UO"
+    networks:
+      - garage
+  garage-gateway: &garage
+    image: dxflrs/garage:v2.0.0
+    restart: unless-stopped
+    container_name: garage-gateway
+    volumes:
+      - /volume1/s3-1/app/garage.toml:/etc/garage.toml:ro
+      - /volume1/s3-1/gateway/meta:/var/lib/garage/meta
+      - /volume1/s3-1/gateway/data:/var/lib/garage/data
+    networks:
+      - garage
+    ports:
+      - "3900:3900"   # API / S3 gateway
+      - "3901:3901"   # RPC communication
+      - "3902:3902"   # S3 Web API
+      - "3903:3903"
+  garage-node1:
+    <<: *garage
+    container_name: garage-node1
+    volumes:
+      - /volume1/s3-1/app/garage.toml:/etc/garage.toml:ro
+      - /volume1/s3-1/node1/meta:/var/lib/garage/meta
+      - /volume1/s3-1/node1/data:/var/lib/garage/data
+    ports:
+      - "4901:3901"
+  garage-node2:
+    <<: *garage
+    container_name: garage-node2
+    volumes:
+      - /volume1/s3-1/app/garage.toml:/etc/garage.toml:ro
+      - /volume2/s3-2/node2/meta:/var/lib/garage/meta
+      - /volume2/s3-2/node2/data:/var/lib/garage/data
+    ports:
+      - "5901:3901"
+  garage-node3:
+    <<: *garage
+    container_name: garage-node3
+    volumes:
+      - /volume1/s3-1/app/garage.toml:/etc/garage.toml:ro
+      - /volume3/s3-3/node3/meta:/var/lib/garage/meta
+      - /volume3/s3-3/node3/data:/var/lib/garage/data
+    ports:
+      - "6901:3901"
+networks:
+  garage:
+    driver: bridge
+
